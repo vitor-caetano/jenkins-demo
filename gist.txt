@@ -1,0 +1,70 @@
+https://github.com/jenkinsci
+
+######################
+# Create The Cluster #
+######################
+
+# Make sure that your minikube version is v0.26 or higher
+
+minikube start \
+    --vm-driver virtualbox \
+    --cpus 3 \
+    --memory 3072
+
+## INSTALL MINIKUBE
+https://kubernetes.io/docs/tasks/tools/install-minikube/
+
+minikube addons enable ingress
+minikube addons enable storage-provisioner
+minikube addons enable default-storageclass
+
+minikube status
+
+kubectl get nodes
+
+LB_IP="$(minikube ip)"
+
+echo $LB_IP
+
+
+# NIP.IO
+https://nip.io/
+
+JENKINS_ADDR="jenkins.$LB_IP.nip.io"
+
+echo $JENKINS_ADDR
+
+nslookup $JENKINS_ADDR
+
+kubectl create namespace jenkins
+
+# HELM THE PACKAGE MANAGER FOR KUBERNETES
+https://helm.sh/
+https://hub.helm.sh/
+https://hub.helm.sh/charts/stable/jenkins
+
+helm repo update
+helm search repo
+helm search repo jenkins
+helm inspect all stable/jenkins
+helm inspect all stable/jenkins | grep jenkins/jenkins
+
+helm install jenkins stable/jenkins \
+    --namespace jenkins \
+    --values helm/jenkins-values.yml \
+    --set master.hostName=$JENKINS_ADDR
+
+kubectl -n jenkins \
+rollout status deploy jenkins
+
+helm ls --all-namespaces
+
+open http://$JENKINS_ADDR
+
+kubectl -n jenkins \
+     get secret jenkins \
+    -o jsonpath="{.data.jenkins-admin-password}" \
+    | base64 --decode; echo
+
+# ADMIN password
+
