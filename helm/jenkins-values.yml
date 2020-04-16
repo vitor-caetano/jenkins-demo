@@ -19,7 +19,7 @@ master:
   - kubernetes:1.22.3
   # - pipeline-utility-steps:2.3.1
   # - pipeline-model-definition:1.5.0
-  # # - slack:2.35
+  # - slack:2.35
   # - thinBackup:1.9
   - workflow-aggregator:2.6
   - ssh-slaves:1.31.0
